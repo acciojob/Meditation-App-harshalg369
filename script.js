@@ -1,4 +1,3 @@
-//your JS code here. If required.
 const video = document.querySelector("video");
 const audio = document.querySelector("audio");
 const playBtn = document.querySelector(".play");
@@ -7,7 +6,6 @@ const soundButtons = document.querySelectorAll(".sound-picker button");
 const timeButtons = document.querySelectorAll("#time-select button");
 
 let duration = 600;
-let currentTime = duration;
 
 playBtn.addEventListener("click", () => {
   if (audio.paused) {
@@ -21,11 +19,12 @@ playBtn.addEventListener("click", () => {
   }
 });
 
-soundButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    audio.src = button.getAttribute("data-sound");
-    video.querySelector("source").src = button.getAttribute("data-video");
+soundButtons.forEach(btn => {
+  btn.addEventListener("click", function () {
+    audio.src = this.getAttribute("data-sound");
+    video.querySelector("source").src = this.getAttribute("data-video");
     video.load();
+
     if (!audio.paused) {
       audio.play();
       video.play();
@@ -33,29 +32,25 @@ soundButtons.forEach(button => {
   });
 });
 
-timeButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    duration = button.getAttribute("data-time");
-    currentTime = duration;
-    updateTime();
+timeButtons.forEach(btn => {
+  btn.addEventListener("click", function () {
+    duration = this.getAttribute("data-time");
+    audio.currentTime = 0;
   });
 });
 
 audio.addEventListener("timeupdate", () => {
-  currentTime = duration - audio.currentTime;
+  let remaining = duration - audio.currentTime;
 
-  if (currentTime <= 0) {
+  let minutes = Math.floor(remaining / 60);
+  let seconds = Math.floor(remaining % 60);
+
+  timeDisplay.textContent = `${minutes}:${seconds}`;
+
+  if (remaining <= 0) {
     audio.pause();
     video.pause();
     audio.currentTime = 0;
     playBtn.textContent = "Play";
   }
-
-  updateTime();
 });
-
-function updateTime() {
-  let minutes = Math.floor(currentTime / 60);
-  let seconds = Math.floor(currentTime % 60);
-  timeDisplay.textContent = `${minutes}:${seconds}`;
-}
